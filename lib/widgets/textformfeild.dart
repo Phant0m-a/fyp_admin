@@ -12,7 +12,6 @@ class CustomTextFormField extends StatefulWidget {
   final Icon? icon;
   final TextInputType? keyboardType;
   final bool obscureText;
-
   const CustomTextFormField({
     Key? key,
     required this.maxLines,
@@ -44,6 +43,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           }
           return null;
         },
+      
         obscureText: widget.obscureText,
         maxLength: widget.maxLenght,
         maxLines: widget.maxLines,

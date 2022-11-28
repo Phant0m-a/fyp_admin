@@ -1,5 +1,11 @@
+import 'dart:developer';
+
 import 'package:animate_gradient/animate_gradient.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fypadmin/services/firebase_services.dart';
+import 'package:fypadmin/views/home/home.dart';
 
 import '../../constants/style.dart';
 import '../../widgets/textformfeild.dart';
@@ -12,33 +18,90 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final formKey = GlobalKey();
+  final _formKey = GlobalKey<FormState>();
+  String username = '';
+  String password = '';
+
+  Future doc() {
+    return FirebaseFirestore.instance
+        .collection('messages')
+        .get()
+        .then((snapshot) => snapshot.docs.forEach((element) {
+              print(element.data());
+            }));
+  }
+
+  @override
+  void initState() {
+    doc();
+
+    super.initState();
+  }
+
+  final Services _services = Services();
+
+  //login method
+  _login(context) async {
+    print('in servcies');
+    _services
+        .getAdminCredentials()
+        .then((snapshot) => snapshot.docs.forEach((doc) async {
+              if (doc.get('name') == 'Admin') {
+                print(doc.get('name'));
+                print(doc.get('password'));
+                if (doc.get('password') == 'admin') {
+                  print(doc.get('password'));
+                  UserCredential userCredential =
+                      await FirebaseAuth.instance.signInAnonymously();
+                  print(userCredential.user.toString());
+                  if (userCredential.user!.uid != null) {
+                    // FirebaseAuth.instance.signInAnonymously()
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()));
+                    return;
+                  } else {
+                    // ignore: use_build_context_synchronously
+                    _showDialog(context, 'Login error', 'Login Error');
+                    print('bruh ... uid is not null');
+                  }
+                } else {
+                  _showDialog(context, 'incorrect password', 'Login Error');
+                  print('invalid password');
+                }
+              } else {
+                _showDialog(context, 'user not found', 'Login Error');
+                print('user not found lol!');
+              }
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      key: formKey,
+      // key: _formKey,
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
         centerTitle: true,
         elevation: 0,
       ),
       body: AnimateGradient(
-        duration: Duration(seconds: 15),
+        duration: const Duration(seconds: 15),
         primaryBegin: Alignment.topLeft,
         primaryEnd: Alignment.bottomLeft,
         secondaryBegin: Alignment.bottomLeft,
         secondaryEnd: Alignment.topRight,
-        primaryColors:  [
+        primaryColors: [
           primary,
           secondary.withOpacity(0.1),
           Colors.white,
         ],
-        secondaryColors:  [
+        secondaryColors: [
           primary.withOpacity(0.5),
           Colors.white,
           secondary.withOpacity(0.3),
-
         ],
         child: Center(
           child: Container(
@@ -51,27 +114,46 @@ class _LoginState extends State<Login> {
                 width: 1,
               ),
               child: Form(
-                key: formKey,
+                // key: _formKey,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("Admin App", style: MyTextStyles.headingLargePrimary,),
+                      //image
+                      // Image.asset(
+                      //   'assets/apple-logo.png',
+                      // ),
+
+                      Text(
+                        "Admin App",
+                        style: MyTextStyles.headingLargePrimary,
+                      ),
                       Column(
-                        children: const [
-                           CustomTextFormField(
-                             // validator: "Enter user Name",
+                        children: [
+                          CustomTextFormField(
+                            // onChange: (value) {
+                            //   setState(() {
+                            //     print(username);
+                            //     username = value;
+                            //   });
+                            // },
+                            validator: "Enter user Name",
                             maxLines: 1,
                             labelText: "User Name",
                             obscureText: false,
-                             icon: Icon(Icons.person_outline),
+                            icon: Icon(Icons.person_outline),
                           ),
-                           CustomTextFormField(
-
+                          CustomTextFormField(
+                            // onChange: (value) {
+                            //   setState(() {
+                            //     print(password);
+                            //     password = value;
+                            //   });
+                            // },
                             maxLines: 1,
                             labelText: "Password",
-                             icon: Icon(Icons.vpn_key_outlined),
+                            icon: Icon(Icons.vpn_key_outlined),
                             obscureText: true,
                           ),
                         ],
@@ -79,11 +161,16 @@ class _LoginState extends State<Login> {
                       Row(
                         children: [
                           Expanded(
-                              child: ElevatedButton(
-                            onPressed: () {
-
+                              child: MaterialButton(
+                            onPressed: () async {
+                              print('inlogin');
+                              await _login(context);
+                              // if (_formKey.currentState?.validate()) {
+                              // } else {
+                              //   print('not validated');
+                              // }
                             },
-                            child: Text('Login'),
+                            child: const Text('Login'),
                           )),
                         ],
                       ),
@@ -97,4 +184,25 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+// future dialog but
+void _showDialog(BuildContext context, String message, String title) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: new Text(title),
+        content: new Text(message),
+        actions: <Widget>[
+          MaterialButton(
+            child: new Text("Try Again"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
