@@ -50,7 +50,8 @@ class _LoginState extends State<Login> {
                 print(doc.get('name'));
                 print(doc.get('password'));
                 if (doc.get('password') == 'admin') {
-                  print(doc.get('password'));
+                  print(doc.get('password')); 
+                  // production commits
                   UserCredential userCredential =
                       await FirebaseAuth.instance.signInAnonymously();
                   print(userCredential.user.toString());
