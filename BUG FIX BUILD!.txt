@@ -1,0 +1,11 @@
+I get the same error, for a couple of weeks now, when trying to run an app from the master channel.
+
+I got it working by forcing the web renderer to be HTML:
+
+flutter run -d chrome --no-sound-null-safety --web-renderer=html
+When you build your app for web you should:
+
+flutter build web --no-sound-null-safety --web-renderer=html
+By default the web renderer is auto, choosing the canvaskit web renderer on desktop browsers and html on mobile.
+
+If you want to avoid this altogether you can stay on the beta or dev channels.
