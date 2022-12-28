@@ -13,11 +13,19 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_core:
+  cloud_firestore: ^4.1.0
+  firebase_auth: ^4.1.4
+
 
 
   cupertino_icons: ^1.0.2
   animate_gradient: ^0.0.2
   dropdown_button2: ^1.9.1
+  future_progress_dialog: ^0.2.0
+  ars_progress_dialog:
+  flutter_admin_scaffold: ^1.1.2
+  firebase:
+  firebase_storage:
 
 dev_dependencies:
   flutter_test:

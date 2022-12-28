@@ -17,6 +17,9 @@ import '../views/settings/settings_screen.dart';
 class SideBarWidget{
   static sideBarMenu(context, selectedRoute){
     return SideBar(
+      activeBackgroundColor: Colors.black54,
+      activeIconColor: Colors.white,
+      activeTextStyle: TextStyle(color:Colors.white),
       items: const [
         AdminMenuItem(
           title: 'Dashboard',
@@ -113,6 +116,7 @@ class SideBarWidget{
             style: TextStyle(
               letterSpacing: 2,
               color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),

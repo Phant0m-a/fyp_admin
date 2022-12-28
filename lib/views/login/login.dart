@@ -114,7 +114,11 @@ class _LoginState extends State<Login> {
 
 
              // if failure
-           }catch(e){  _showDialog(context, e.toString(),'Login Failed');}
+           }catch(e){  _showDialog(context, e.toString(),'Login Failed');
+           setState(() {
+             isLoading = false;
+           });
+           }
 
            // progressDialog.dismiss();
            setState(() {
@@ -123,6 +127,9 @@ class _LoginState extends State<Login> {
            return;
          }else{
            _showDialog(context, 'invalid Username or Password', 'Login Error');
+           setState(() {
+             isLoading = false;
+           });
            return;
          }
 
@@ -179,7 +186,7 @@ class _LoginState extends State<Login> {
                       // Image.asset(
                       //   'assets/apple-logo.png',
                       // ),
-                      Visibility(visible: isLoading, child: CircularProgressIndicator())
+                      Center(child: Visibility(visible: isLoading, child: CircularProgressIndicator()))
 
                       ,
 
